@@ -58,15 +58,6 @@ namespace ImageProcessor
             }
         }
 
-        private void skewToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            funcListBox.Items.Add(new skewFunc());
-        }
-
-        private void overlayToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            funcListBox.Items.Add(new overlayFunc());
-        }
         private void button2_Click(object sender, EventArgs e)
         {
             funcListBox.Items.Remove(funcListBox.SelectedItem);
@@ -130,28 +121,68 @@ namespace ImageProcessor
             MyDialog.ShowMessageBox("이미지를 찾을 수 없습니다.", "이미지를 찾을 수 없습니다.");
         }
 
+        private void skewToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            funcListBox.Items.Add(new skewFunc());
+        }
+
+        private void overlayToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog fileDialog = new OpenFileDialog();
+            DialogResult result = fileDialog.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                Image image = Image.FromFile(fileDialog.FileName);
+                funcListBox.Items.Add(new overlayFunc(image));
+            }
+        }
         private void moveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             OpenFileDialog fileDialog = new OpenFileDialog();
             DialogResult result = fileDialog.ShowDialog();
-            if (result == DialogResult.OK) {
+            if (result == DialogResult.OK)
+            {
                 Image image = Image.FromFile(fileDialog.FileName);
                 funcListBox.Items.Add(new moveFunc(image));
             }
+        }
+        private void BlurToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            funcListBox.Items.Add(new blurFunc());
         }
     }
     interface ImgFunc
     {
         Image Apply(Image image);
     }
+    class blurFunc : ImgFunc
+    {
+
+        private Random random;
+        int range;
+        public blurFunc()
+        {
+            string rangeStr = "";
+            MyDialog.ShowInputBox("Blur 강도 입력", "강도 (1 이상)", ref rangeStr);
+            range = int.Parse(rangeStr);
+            this.random = new Random();
+        }
+        public unsafe Image Apply(Image image)
+        {
+            int blurSize = random.Next(range);
+            blurSize = blurSize < 1 ? 1 : blurSize;
+            return image;
+        }
+    }
     class skewFunc : ImgFunc
     {
+        
         private Random random;
         int range;
         public skewFunc()
         {
             string rangeStr = "";
-            MyDialog.ShowInputBox("", "", ref rangeStr);
+            MyDialog.ShowInputBox("Skew 각도 입력", "각도", ref rangeStr);
             range =int.Parse(rangeStr);
             this.random = new Random();
         }
@@ -176,7 +207,7 @@ namespace ImageProcessor
             rb = new PointF(rb.X - lb.X, rb.Y + 0);
             rt = new PointF(rt.X - lb.X, rt.Y + 0);
             PointF[] pointsOrigin = { new PointF(image.Width, 0), new PointF(0,0), new PointF(image.Width, image.Height) };
-            PointF[] pointsMinusOrigin = { new PointF(rt.X - lb.X, 0), new PointF(0, 0), new PointF(rt.X - lb.X, rb.Y) };
+            //PointF[] pointsMinusOrigin = { new PointF(rt.X - lb.X, 0), new PointF(0, 0), new PointF(rt.X - lb.X, rb.Y) };
 
             PointF[] points = { rt,center, rb };
 
@@ -187,38 +218,15 @@ namespace ImageProcessor
                 graphics.DrawImage(image, pointsOrigin);
             }
             var destImage = (Image)new Bitmap((int)(rt.X-lb.X), (int)(rb.Y));
-            var one = (Image)new Bitmap((int)(rt.X - lb.X), (int)(rb.Y));
-            using (graphics = Graphics.FromImage(destImage))
-            {
-                graphics.CompositingMode = CompositingMode.SourceCopy;
-                graphics.CompositingQuality = CompositingQuality.HighQuality;
-                graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                graphics.SmoothingMode = SmoothingMode.HighQuality;
-                graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-                using (var wrapMode = new ImageAttributes())
-                {
-                    wrapMode.SetWrapMode(WrapMode.Clamp);
-                    graphics.DrawImage(image, points);
-                    //graphics.DrawImage(image, pointsMinusOrigin);
-                }
-            }
+            //var one = (Image)new Bitmap((int)(rt.X - lb.X), (int)(rb.Y));
+            graphics = Graphics.FromImage(destImage);
+            graphics.DrawImage(image, points);
             if (rev)
             {
                 return destImage;
             }else
             return Mirror(destImage);
         }
-        /*
-        static double DegreesToRadians(double angleInDegrees)
-        {
-            return angleInDegrees * (Math.PI / 180);
-        }
-        static Point RotatePoint(Point pointToRotate, double angleInDegrees)
-        {
-            return RotatePoint(pointToRotate, new Point(0, 0), angleInDegrees);
-        }
-        */
         static PointF RotatePoint(PointF pointToRotate, PointF centerPoint, double angleInDegrees)
         {
             double angleInRadians = angleInDegrees * (Math.PI / 180);
@@ -239,9 +247,22 @@ namespace ImageProcessor
     }
     class overlayFunc : ImgFunc
     {
+        private Image image;
+        private Random random;
+        public overlayFunc(Image image)
+        {
+            this.image = image;
+            this.random = new Random();
+        }
+
         public Image Apply(Image image)
         {
-            return image;
+            int x = random.Next(this.image.Width + image.Width)- this.image.Width;
+            int y = random.Next(this.image.Height + image.Height)- this.image.Height;
+            var destImage = (Image)image.Clone();
+            var graphics = Graphics.FromImage(destImage);
+            graphics.DrawImage(this.image, new Rectangle(x, y, this.image.Width, this.image.Height), 0, 0, this.image.Width, this.image.Height, GraphicsUnit.Pixel); ;
+            return destImage;
         }
     }
     class moveFunc : ImgFunc
@@ -260,20 +281,8 @@ namespace ImageProcessor
                 int x = random.Next(this.image.Width - image.Width);
                 int y = random.Next(this.image.Height - image.Height);
                 var destImage = (Image)this.image.Clone();
-                using (var graphics = Graphics.FromImage(destImage))
-                {
-                    graphics.CompositingMode = CompositingMode.SourceCopy;
-                    graphics.CompositingQuality = CompositingQuality.HighQuality;
-                    graphics.InterpolationMode = InterpolationMode.HighQualityBicubic;
-                    graphics.SmoothingMode = SmoothingMode.HighQuality;
-                    graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
-                    using (var wrapMode = new ImageAttributes())
-                    {
-                        wrapMode.SetWrapMode(WrapMode.Clamp);
-                        graphics.DrawImage(image, new Rectangle(x,y, image.Width, image.Height), 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
-                    }
-                }
+                var graphics = Graphics.FromImage(destImage);
+                graphics.DrawImage(image, new Rectangle(x, y, image.Width, image.Height), 0, 0, image.Width, image.Height, GraphicsUnit.Pixel); ;
                 return destImage;
             }else
                 return image;

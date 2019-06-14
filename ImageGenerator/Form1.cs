@@ -173,13 +173,17 @@ namespace ImageGenerator
                 return;
             }
             string str = "";
-            DialogResult result = MyDialog.ShowInputBox("이미지 수", "생성할 이미지 수", ref str);
+            DialogResult result = MyDialog.ShowInputBox("이미지 수", "생성할 이미지 수 (999999 이하)", ref str);
             if (result.Equals(DialogResult.OK))
             {
                 Regex regex = new Regex("[0-9]{1,}");
                 try
                 {
                     int count = Int32.Parse(regex.Match(str).Value);
+                    if (count> 999999)
+                    {
+                        count = 999999;
+                    }
 
                     using (StreamWriter outputFile = new StreamWriter(textBox1.Text + "/label.csv"))
                     {
