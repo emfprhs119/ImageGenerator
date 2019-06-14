@@ -1,4 +1,5 @@
-﻿using System;
+﻿using OpenCvSharp;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,6 +13,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Point = System.Drawing.Point;
 
 namespace ImageProcessor
 {
@@ -163,15 +165,19 @@ namespace ImageProcessor
         public blurFunc()
         {
             string rangeStr = "";
-            MyDialog.ShowInputBox("Blur 강도 입력", "강도 (1 이상)", ref rangeStr);
+            MyDialog.ShowInputBox("Blur Kernal Size", "Kernal Size Range 입력 (3 이상)", ref rangeStr);
             range = int.Parse(rangeStr);
             this.random = new Random();
         }
-        public unsafe Image Apply(Image image)
+        public Image Apply(Image image)
         {
             int blurSize = random.Next(range);
-            blurSize = blurSize < 1 ? 1 : blurSize;
-            return image;
+            blurSize = blurSize < 3 ? 3 : blurSize;
+            blurSize = blurSize / 2 * 2 + 1;
+            Mat outImg = new Mat();
+            Mat img = OpenCvSharp.Extensions.BitmapConverter.ToMat((Bitmap)image);
+            Cv2.Blur(img, outImg, new OpenCvSharp.Size(blurSize, blurSize));
+            return OpenCvSharp.Extensions.BitmapConverter.ToBitmap(outImg);
         }
     }
     class skewFunc : ImgFunc
