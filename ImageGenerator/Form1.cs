@@ -53,8 +53,11 @@ namespace ImageGenerator
             string tmp;
             foreach (ResizeablePanel field in fieldList) {
                 tmp = field.rxrdg.Next();
-                g.DrawString(tmp, field.Font, Brushes.Black, field.Location);
-                rt += "\t" + tmp;
+
+                tmp = tmp.Replace("\\n", Environment.NewLine);
+                g.DrawString(tmp, field.Font, field.getColor(), field.Location);
+                tmp = tmp.Replace(Environment.NewLine, "");
+                rt += ",\"" + tmp+"\"";
             }
             return new Tuple<Image, string>(b,rt);
 

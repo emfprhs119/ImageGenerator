@@ -152,10 +152,54 @@ namespace ImageProcessor
         {
             funcListBox.Items.Add(new blurFunc());
         }
+
+        private void PerspectiveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            funcListBox.Items.Add(new PerspectiveFunc());
+        }
     }
     interface ImgFunc
     {
         Image Apply(Image image);
+    }
+    class PerspectiveFunc :ImgFunc
+    {
+        private Random random;
+        int range;
+        public PerspectiveFunc()
+        {
+            string rangeStr = "";
+            MyDialog.ShowInputBox("Perspective range", "Perspective 픽셀범위 입력", ref rangeStr);
+            range = int.Parse(rangeStr);
+            this.random = new Random();
+        }
+        public Image Apply(Image image)
+        {
+            int mx = random.Next(range);
+            int my = random.Next(range);
+            Mat img = OpenCvSharp.Extensions.BitmapConverter.ToMat((Bitmap)image);
+            Mat outImg = new Mat();
+
+            Point2f[] srcPoint = new Point2f[4];
+            Point2f[] dstPoint = new Point2f[4];
+
+            srcPoint[0] = new Point2f(0.0f, 0.0f);
+            srcPoint[1] = new Point2f(0.0f, image.Height);
+            srcPoint[2] = new Point2f(image.Width, 0.0f);
+            srcPoint[3] = new Point2f(image.Width, image.Height);
+            //top
+            dstPoint[0] = new Point2f(0.0f+mx, 0.0f+my);
+            dstPoint[1] = new Point2f(0.0f, image.Height);
+            dstPoint[2] = new Point2f(image.Width-mx, 0.0f+my);
+            dstPoint[3] = new Point2f(image.Width, image.Height);
+
+
+            using (Mat m = Cv2.GetPerspectiveTransform(srcPoint, dstPoint))
+            {
+                Cv2.WarpPerspective(img, outImg, m, new OpenCvSharp.Size(image.Width, image.Height));
+            }
+            return OpenCvSharp.Extensions.BitmapConverter.ToBitmap(outImg);
+        }
     }
     class blurFunc : ImgFunc
     {

@@ -34,6 +34,7 @@
             this.skewToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.overlayToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.moveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.blurToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.button1 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
@@ -42,7 +43,7 @@
             this.button5 = new System.Windows.Forms.Button();
             this.button6 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
-            this.blurToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.perspectiveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.contextMenuStrip1.SuspendLayout();
             this.SuspendLayout();
@@ -62,9 +63,10 @@
             this.skewToolStripMenuItem,
             this.overlayToolStripMenuItem,
             this.moveToolStripMenuItem,
-            this.blurToolStripMenuItem});
+            this.blurToolStripMenuItem,
+            this.perspectiveToolStripMenuItem});
             this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 114);
+            this.contextMenuStrip1.Size = new System.Drawing.Size(181, 136);
             // 
             // skewToolStripMenuItem
             // 
@@ -86,6 +88,13 @@
             this.moveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.moveToolStripMenuItem.Text = "Move";
             this.moveToolStripMenuItem.Click += new System.EventHandler(this.moveToolStripMenuItem_Click);
+            // 
+            // blurToolStripMenuItem
+            // 
+            this.blurToolStripMenuItem.Name = "blurToolStripMenuItem";
+            this.blurToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.blurToolStripMenuItem.Text = "Blur";
+            this.blurToolStripMenuItem.Click += new System.EventHandler(this.BlurToolStripMenuItem_Click);
             // 
             // button1
             // 
@@ -166,12 +175,12 @@
             this.button7.UseVisualStyleBackColor = true;
             this.button7.Click += new System.EventHandler(this.Test_Click);
             // 
-            // blurToolStripMenuItem
+            // perspectiveToolStripMenuItem
             // 
-            this.blurToolStripMenuItem.Name = "blurToolStripMenuItem";
-            this.blurToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.blurToolStripMenuItem.Text = "Blur";
-            this.blurToolStripMenuItem.Click += new System.EventHandler(this.BlurToolStripMenuItem_Click);
+            this.perspectiveToolStripMenuItem.Name = "perspectiveToolStripMenuItem";
+            this.perspectiveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.perspectiveToolStripMenuItem.Text = "Perspective";
+            this.perspectiveToolStripMenuItem.Click += new System.EventHandler(this.PerspectiveToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -211,6 +220,7 @@
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.ToolStripMenuItem moveToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem blurToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem perspectiveToolStripMenuItem;
     }
 }
 

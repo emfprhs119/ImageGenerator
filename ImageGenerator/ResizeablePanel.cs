@@ -39,17 +39,36 @@ namespace ImageGenerator
             contextMenuStrip2 = new ContextMenuStrip();
             폰트ToolStripMenuItem = new ToolStripMenuItem();
             폰트ToolStripMenuItem.Text = "폰트";
+            ToolStripMenuItem 컬러ToolStripMenuItem = new ToolStripMenuItem();
+            컬러ToolStripMenuItem.Text = "컬러";
             제거ToolStripMenuItem = new ToolStripMenuItem();
             제거ToolStripMenuItem.Text = "제거";
             ToolStripMenuItem RegexToolStripMenuItem = new ToolStripMenuItem();
             RegexToolStripMenuItem.Text = "Regex";
             폰트ToolStripMenuItem.Click += 폰트ToolStripMenuItem_Click;
+            컬러ToolStripMenuItem.Click += 컬러ToolStripMenuItem_Click;
             RegexToolStripMenuItem.Click += RegexToolStripMenuItem_Click;
             제거ToolStripMenuItem.Click += 제거ToolStripMenuItem_Click;
             this.contextMenuStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.폰트ToolStripMenuItem,RegexToolStripMenuItem,this.제거ToolStripMenuItem});
+            this.폰트ToolStripMenuItem,컬러ToolStripMenuItem,RegexToolStripMenuItem,this.제거ToolStripMenuItem});
             initialize();
         }
+
+        private void 컬러ToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            ColorDialog colorDialog = new ColorDialog();
+            DialogResult result = colorDialog.ShowDialog();
+            if (result == DialogResult.OK)
+            {
+                this.ForeColor = colorDialog.Color;
+            }
+        }
+
+        internal Brush getColor()
+        {
+            return new SolidBrush(ForeColor);
+        }
+
         public void initialize()
         {
             this.Size = new System.Drawing.Size(100, 30);
